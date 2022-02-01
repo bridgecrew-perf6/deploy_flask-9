@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/styles.css')}}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+<body>
+    <div class="row head_page">
+        <h1 class="col-md-11">Welcome {{session["name"]}}</h1>
+        <form class="col-md-1" action="/logout" method="POST">
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+    </div>
+    <div class="container">
+        <div class="row link_dashboard">
+            <a class="col-md-10 offset-md-1" href="/dashboard">Dashboard</a>
+        </div>
+        {% if recipe_id == 0: %}
+            <h1 class="col-md-10 offset-md-1">Add New Recipe</h1>
+        {% else: %}
+            <h1 class="col-md-10 offset-md-1">Edit Recipe</h1>
+        {% endif %}
+        
+        <div class="row">
+            {% with messages = get_flashed_messages(category_filter = ["register_recipe"]) %}
+                {% if messages|length != 0 %}
+                    <div class="col-md-10 offset-md-1 div_messages_create">
+                        {% for message in messages: %}
+                            <p class="message">{{message}}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <form action="/create_recipe" method="POST">
+                <div class="row">
+                    <div class="col-md-5 offset-md-1">
+                        <input type="hidden" value="{{recipe_id}}" name="recipe_id">
+                        <div class="mb-3">
+                            <label class="form-label" for="name_recipe">Name:</label>
+                            <input class="form-control" type="text" name="name_recipe" id="name_recipe" value="{{recipe.name}}" placeholder="Enter your name of recipe">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="description_recipe">Description:</label>
+                            <textarea class="form-control" type="text" name="description_recipe" rows="3" id="description_recipe" placeholder="Enter your description of recipe">{{recipe.description}}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="instructions_recipe">Instructions:</label>
+                            <textarea class="form-control" type="text" name="instructions_recipe" rows="3" cols="50" id="instructions_recipe" placeholder="Enter the instructions of recipe">{{recipe.instructions}}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            {% if recipe_id == 0: %}
+                                <button class="btn btn-primary" type="submit">Create</button>
+                            {% else: %}
+                                <button class="btn btn-success" type="submit">Update</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="mb-3">
+                            <label class="form-label" for="date_made">Date made on:</label>
+                            <input class="form-control" value="{{recipe.date_made}}" type="date" name="date_made" id="date_made">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="minutes">Under 30 minutes?</label>
+                            <div>
+                                <input checked type="radio" name="minutes" id="yes" value="1">
+                                <label for="">Yes</label>
+                                <input {% if recipe.thirty_minutes == 'NO':%} checked {% endif %} type="radio" name="minutes" id="no" value="0">
+                                <label for="">No</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
